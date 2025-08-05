@@ -85,4 +85,4 @@ if __name__ == '__main__':
         configs = yaml.safe_load(cnf)
     m = Data(**configs['args'])
     m.apply_func(configs['function'])
-    m.data.to_csv(f'../data/{configs["name"]}.csv')
+    m.data.to_csv(f'D:/repo/mockingjay/data/{configs["name"]}.csv')
