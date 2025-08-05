@@ -50,7 +50,7 @@ class Data:
     def _add_index(self):
         cols = list(self.data.columns)
         if self.date_index:
-            self.data['index_column'] = [(datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') for i in range(100)]
+            self.data['index_column'] = [(datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') for i in range(self.n_sample)]
         else:
             self.data = self.data.reset_index().rename(columns = {'index': 'index_column'})
         self.data = self.data[['index_column', *cols]]
