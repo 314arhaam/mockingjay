@@ -75,6 +75,6 @@ if __name__ == '__main__':
     m = Data(**configs['args'])
     print(f"[*] {m}")
     m.apply_func(configs['function'])
-    print(f'Function applied: {m}')
+    print(f'[*] Function applied: {m}')
     m.data.to_csv(f'D:/repo/mockingjay/data/{configs["name"]}.csv')
     print(f"[*] Data stored: `D:/repo/mockingjay/data/{configs["name"]}.csv`")
