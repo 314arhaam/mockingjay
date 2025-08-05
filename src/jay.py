@@ -71,6 +71,10 @@ if __name__ == '__main__':
         print(e)
     with open(conf_path, 'r') as cnf:
         configs = yaml.safe_load(cnf)
+    print("[*] INITIALIZE")
     m = Data(**configs['args'])
+    print("[*] {m}")
     m.apply_func(configs['function'])
+    print(f'Function applied: {m}')
     m.data.to_csv(f'D:/repo/mockingjay/data/{configs["name"]}.csv')
+    print(f"[*] Data stored: `D:/repo/mockingjay/data/{configs["name"]}.csv`")
