@@ -71,7 +71,7 @@ if __name__ == '__main__':
         print(e)
     with open(conf_path, 'r') as cnf:
         configs = yaml.safe_load(cnf)
-    print("[*] INITIALIZE")
+    print("[*] Initialized")
     m = Data(**configs['args'])
     print(f"[*] {m}")
     m.apply_func(configs['function'])
