@@ -69,18 +69,6 @@ if __name__ == '__main__':
         conf_path = sys.argv[1]
     except Exception as e:
         print(e)
-    """
-    print('[*] Initialize')
-    m = Data(100, 5, 15, date_index = True)
-    print('[*] Object')
-    print(m)
-    func = 'x1 + x2*x3 + np.sin(x1)'
-    print(f'[*] Apply function: {func}')
-    m.apply_func(func)
-    print(m)
-    print('[*] Data')
-    print(m.data.head())
-    """
     with open(conf_path, 'r') as cnf:
         configs = yaml.safe_load(cnf)
     m = Data(**configs['args'])
