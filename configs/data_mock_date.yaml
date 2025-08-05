@@ -1,0 +1,8 @@
+name: "data_mock_date"
+args:
+  n_samples: 1000
+  n_vars: 10
+  null_seed: 50
+  n_negative: 6
+  date_index: True
+function: "2*x1+4*x3-x2"
