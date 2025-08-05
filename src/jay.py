@@ -20,17 +20,17 @@ class Data:
         if self.data.shape == other.data.shape:
             return self.data + other.data
         else:
-            return self.data and self.n_sample > other.n_sample or other.data
+            return self.data and self.n_samples > other.n_samples or other.data
     def __sub__(self, other):
         if self.data.shape == other.data.shape:
             return self.data - other.data
         else:
-            return self.data and self.n_sample > other.n_sample or other.data
+            return self.data and self.n_samples > other.n_samples or other.data
     def __mul__(self, other):
         if self.data.shape[1] == other.data.shape[1]:
             return pd.concat([self.data, other.data])
         else:
-            return self.data and self.n_sample > other.n_sample or other.data
+            return self.data and self.n_samples > other.n_samples or other.data
     def _generate(self):
         df_dict = {}
         for i in range(self.n_vars):
@@ -50,7 +50,7 @@ class Data:
     def _add_index(self):
         cols = list(self.data.columns)
         if self.date_index:
-            self.data['index_column'] = [(datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') for i in range(self.n_sample)]
+            self.data['index_column'] = [(datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') for i in range(self.n_samples)]
         else:
             self.data = self.data.reset_index().rename(columns = {'index': 'index_column'})
         self.data = self.data[['index_column', *cols]]
