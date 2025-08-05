@@ -1,0 +1,77 @@
+import numpy as np
+import pandas as pd
+import datetime
+
+class MockData:
+    def __init__(self, n_samples: int, n_vars: int, null_seed: int, n_negative: int = 3, date_index = False):
+        if n_vars < n_negative:
+            raise ValueError('Number of negative rows cannot be larger that number of variables')
+        self.n_samples = n_samples
+        self.n_vars = n_vars
+        self.null_seed = null_seed
+        self.n_negative = n_negative
+        self.date_index = date_index
+        self.func = None
+        self._generate()
+    def __repr__(self):
+        text = f'MockData: non-null: {self.data.dropna().shape}\traw: {self.data.shape}\tFunc: {self.func}' 
+        return text
+    def __add__(self, other):
+        if self.data.shape == other.data.shape:
+            return self.data + other.data
+        else:
+            return self.data and self.n_sample > other.n_sample or other.data
+    def __sub__(self, other):
+        if self.data.shape == other.data.shape:
+            return self.data - other.data
+        else:
+            return self.data and self.n_sample > other.n_sample or other.data
+    def __mul__(self, other):
+        if self.data.shape[1] == other.data.shape[1]:
+            return pd.concat([self.data, other.data])
+        else:
+            return self.data and self.n_sample > other.n_sample or other.data
+    def _generate(self):
+        df_dict = {}
+        for i in range(self.n_vars):
+            if i < self.n_negative:
+                val = np.linspace(-1, +1, self.n_samples)
+            else:
+                val = (np.linspace(-1, +1, self.n_samples) - np.random.rand())*np.random.randint(1, 50)
+            df_dict[f'x{i}'] = val
+        df = pd.DataFrame(df_dict)
+        mask = np.random.randint(0, self.null_seed, df.shape) > 0
+        mask = pd.DataFrame(mask).rename(
+            columns = dict(zip(range(len(df_dict.keys())), list(df_dict.keys())))
+        )
+        self.data = df[mask]
+        self._add_index()
+        return 0
+    def _add_index(self):
+        cols = list(self.data.columns)
+        if self.date_index:
+            self.data['index_column'] = [(datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') for i in range(100)]
+        else:
+            self.data = self.data.reset_index().rename(columns = {'index': 'index_column'})
+        self.data = self.data[['index_column', *cols]]
+    def apply_func(self, func: str):
+        self.func = func
+        try:
+            for var in [f'x{j}' for j in range(self.n_vars)]:
+                func = func.replace(var, f'self.data["{var}"]')
+        except Exception as e:
+            raise(e)
+        self.data['y'] = eval(func)
+        return func
+
+if __name__ == '__main__':
+    print('[*] Initialize')
+    m = MockData(100, 5, 15, date_index = True)
+    print('[*] Object')
+    print(m)
+    func = 'x1 + x2*x3 + np.sin(x1)'
+    print(f'[*] Apply function: {func}')
+    m.apply_func(func)
+    print(m)
+    print('[*] Data')
+    print(m.data.head())
