@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import datetime
 
-class MockData:
+class Data:
     def __init__(self, n_samples: int, n_vars: int, null_seed: int, n_negative: int = 3, date_index = False):
         if n_vars < n_negative:
             raise ValueError('Number of negative rows cannot be larger that number of variables')
