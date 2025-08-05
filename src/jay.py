@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import datetime
+import datetime, yaml, sys
 
 class Data:
     def __init__(self, n_samples: int, n_vars: int, null_seed: int, n_negative: int = 3, date_index = False):
@@ -65,6 +65,11 @@ class Data:
         return func
 
 if __name__ == '__main__':
+    try:
+        conf_path = sys.argv[1]
+    except Exception as e:
+        print(e)
+    """
     print('[*] Initialize')
     m = Data(100, 5, 15, date_index = True)
     print('[*] Object')
@@ -75,3 +80,9 @@ if __name__ == '__main__':
     print(m)
     print('[*] Data')
     print(m.data.head())
+    """
+    with open(conf_path, 'r') as cnf:
+        configs = yaml.safe_load(cnf)
+    m = Data(**configs['args'])
+    m.apply_func(configs['function'])
+    m.data.to_csv(f'../data/{configs["name"]}.csv')
