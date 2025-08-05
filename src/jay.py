@@ -66,7 +66,7 @@ class Data:
 
 if __name__ == '__main__':
     print('[*] Initialize')
-    m = MockData(100, 5, 15, date_index = True)
+    m = Data(100, 5, 15, date_index = True)
     print('[*] Object')
     print(m)
     func = 'x1 + x2*x3 + np.sin(x1)'
