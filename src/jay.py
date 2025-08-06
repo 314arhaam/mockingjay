@@ -3,7 +3,30 @@ import pandas as pd
 import datetime, yaml, sys
 
 class Data:
+    """
+    A class for generating synthetic mock datasets with optional nulls and a derived column.
+
+    Attributes:
+        n_samples (int): Number of samples (rows).
+        n_vars (int): Number of variables (columns).
+        null_seed (int): Controls sparsity; higher values yield more nulls.
+        n_negative (int): Number of columns with values from -1 to 1.
+        date_index (bool): Whether to use a datetime index.
+        data (pd.DataFrame): Generated dataset.
+        func (str): Last applied function string.
+    """
+
     def __init__(self, n_samples: int, n_vars: int, null_seed: int, n_negative: int = 3, date_index = False):
+        """
+        Initializes the Data class and generates mock data.
+
+        Args:
+            n_samples (int): Number of rows.
+            n_vars (int): Number of features.
+            null_seed (int): Parameter controlling frequency of nulls.
+            n_negative (int): Number of columns filled with linspace from -1 to 1.
+            date_index (bool): Whether to use dates in the index column.
+        """
         if n_vars < n_negative:
             raise ValueError('Number of negative rows cannot be larger that number of variables')
         self.n_samples = n_samples
@@ -13,48 +36,110 @@ class Data:
         self.date_index = date_index
         self.func = None
         self._generate()
+
     def __repr__(self):
+        """
+        Returns a string representation of the object showing data shapes and last applied function.
+        """
         text = f'MockData: non-null: {self.data.dropna().shape}\traw: {self.data.shape}\tFunc: {self.func}' 
         return text
+
     def __add__(self, other):
+        """
+        Adds two Data instances element-wise if shapes match, otherwise returns the larger dataset.
+
+        Args:
+            other (Data): Another Data object.
+
+        Returns:
+            pd.DataFrame: Result of addition or fallback data.
+        """
         if self.data.shape == other.data.shape:
             return self.data + other.data
         else:
             return self.data and self.n_samples > other.n_samples or other.data
+
     def __sub__(self, other):
+        """
+        Subtracts two Data instances element-wise if shapes match, otherwise returns the larger dataset.
+
+        Args:
+            other (Data): Another Data object.
+
+        Returns:
+            pd.DataFrame: Result of subtraction or fallback data.
+        """
         if self.data.shape == other.data.shape:
             return self.data - other.data
         else:
             return self.data and self.n_samples > other.n_samples or other.data
+
     def __mul__(self, other):
+        """
+        Concatenates data from two instances if column counts match, otherwise returns the larger dataset.
+
+        Args:
+            other (Data): Another Data object.
+
+        Returns:
+            pd.DataFrame: Concatenated or fallback data.
+        """
         if self.data.shape[1] == other.data.shape[1]:
             return pd.concat([self.data, other.data])
         else:
             return self.data and self.n_samples > other.n_samples or other.data
+
     def _generate(self):
+        """
+        Internal method to generate mock data with structured values and controlled nulls.
+        """
         df_dict = {}
         for i in range(self.n_vars):
             if i < self.n_negative:
+                # Uniform linspace for negative variables
                 val = np.linspace(-1, +1, self.n_samples)
             else:
+                # Add randomness and scaling for the rest
                 val = (np.linspace(-1, +1, self.n_samples) - np.random.rand())*np.random.randint(1, 50)
             df_dict[f'x{i}'] = val
+
         df = pd.DataFrame(df_dict)
+
+        # Create nulls randomly based on null_seed
         mask = np.random.randint(0, self.null_seed, df.shape) > 0
         mask = pd.DataFrame(mask).rename(
             columns = dict(zip(range(len(df_dict.keys())), list(df_dict.keys())))
         )
         self.data = df[mask]
+
+        # Add index column (datetime or numerical)
         self._add_index()
         return 0
+
     def _add_index(self):
+        """
+        Adds an index column to the DataFrame: either datetime-based or numeric.
+        """
         cols = list(self.data.columns)
         if self.date_index:
-            self.data['index_column'] = [(datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') for i in range(self.n_samples)]
+            self.data['index_column'] = [
+                (datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') 
+                for i in range(self.n_samples)
+            ]
         else:
             self.data = self.data.reset_index().rename(columns = {'index': 'index_column'})
         self.data = self.data[['index_column', *cols]]
+
     def apply_func(self, func: str):
+        """
+        Evaluates a mathematical expression string on the dataset and stores the result in column 'y'.
+
+        Args:
+            func (str): A string expression involving variables like 'x0', 'x1', etc.
+
+        Returns:
+            str: The modified function string after variable substitution.
+        """
         self.func = func
         try:
             for var in [f'x{j}' for j in range(self.n_vars)]:
@@ -65,16 +150,26 @@ class Data:
         return func
 
 if __name__ == '__main__':
+    # Parse command line argument for YAML config path
     try:
         conf_path = sys.argv[1]
     except Exception as e:
         print(e)
+
+    # Load configuration from YAML
     with open(conf_path, 'r') as cnf:
         configs = yaml.safe_load(cnf)
+
     print("[*] Initialized")
+
+    # Initialize data object with given arguments
     m = Data(**configs['args'])
     print(f"[*] {m}")
+
+    # Apply transformation function
     m.apply_func(configs['function'])
     print(f'[*] Function applied: {m}')
+
+    # Save result to CSV
     m.data.to_csv(f'D:/repo/mockingjay/data/{configs["name"]}.csv')
     print(f"[*] Data stored: `D:/repo/mockingjay/data/{configs["name"]}.csv`")
