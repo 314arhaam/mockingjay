@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import datetime, yaml, sys
+from typing import Union
 
 class Data:
     """
@@ -16,7 +17,14 @@ class Data:
         func (str): Last applied function string.
     """
 
-    def __init__(self, n_samples: int, n_vars: int, null_seed: int, n_negative: int = 3, date_index = False):
+    def __init__(
+        self, 
+        n_samples: int, 
+        n_vars: int, 
+        null_seed: int, 
+        n_negative: int = 3, 
+        date_index: bool = False
+    ) -> None:
         """
         Initializes the Data class and generates mock data.
 
@@ -28,23 +36,24 @@ class Data:
             date_index (bool): Whether to use dates in the index column.
         """
         if n_vars < n_negative:
-            raise ValueError('Number of negative rows cannot be larger that number of variables')
-        self.n_samples = n_samples
-        self.n_vars = n_vars
-        self.null_seed = null_seed
-        self.n_negative = n_negative
-        self.date_index = date_index
-        self.func = None
+            raise ValueError('Number of negative rows cannot be larger than number of variables')
+        self.n_samples: int = n_samples
+        self.n_vars: int = n_vars
+        self.null_seed: int = null_seed
+        self.n_negative: int = n_negative
+        self.date_index: bool = date_index
+        self.func: Union[str, None] = None
+        self.data: pd.DataFrame
         self._generate()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Returns a string representation of the object showing data shapes and last applied function.
         """
         text = f'MockData: non-null: {self.data.dropna().shape}\traw: {self.data.shape}\tFunc: {self.func}' 
         return text
 
-    def __add__(self, other):
+    def __add__(self, other: 'Data') -> pd.DataFrame:
         """
         Adds two Data instances element-wise if shapes match, otherwise returns the larger dataset.
 
@@ -57,9 +66,9 @@ class Data:
         if self.data.shape == other.data.shape:
             return self.data + other.data
         else:
-            return self.data and self.n_samples > other.n_samples or other.data
+            return self.data if self.n_samples > other.n_samples else other.data
 
-    def __sub__(self, other):
+    def __sub__(self, other: 'Data') -> pd.DataFrame:
         """
         Subtracts two Data instances element-wise if shapes match, otherwise returns the larger dataset.
 
@@ -72,9 +81,9 @@ class Data:
         if self.data.shape == other.data.shape:
             return self.data - other.data
         else:
-            return self.data and self.n_samples > other.n_samples or other.data
+            return self.data if self.n_samples > other.n_samples else other.data
 
-    def __mul__(self, other):
+    def __mul__(self, other: 'Data') -> pd.DataFrame:
         """
         Concatenates data from two instances if column counts match, otherwise returns the larger dataset.
 
@@ -87,50 +96,49 @@ class Data:
         if self.data.shape[1] == other.data.shape[1]:
             return pd.concat([self.data, other.data])
         else:
-            return self.data and self.n_samples > other.n_samples or other.data
+            return self.data if self.n_samples > other.n_samples else other.data
 
-    def _generate(self):
+    def _generate(self) -> int:
         """
         Internal method to generate mock data with structured values and controlled nulls.
+
+        Returns:
+            int: Always returns 0 after successful generation.
         """
-        df_dict = {}
+        df_dict: dict[str, np.ndarray] = {}
         for i in range(self.n_vars):
             if i < self.n_negative:
-                # Uniform linspace for negative variables
                 val = np.linspace(-1, +1, self.n_samples)
             else:
-                # Add randomness and scaling for the rest
-                val = (np.linspace(-1, +1, self.n_samples) - np.random.rand())*np.random.randint(1, 50)
+                val = (np.linspace(-1, +1, self.n_samples) - np.random.rand()) * np.random.randint(1, 50)
             df_dict[f'x{i}'] = val
 
         df = pd.DataFrame(df_dict)
 
-        # Create nulls randomly based on null_seed
         mask = np.random.randint(0, self.null_seed, df.shape) > 0
-        mask = pd.DataFrame(mask).rename(
-            columns = dict(zip(range(len(df_dict.keys())), list(df_dict.keys())))
+        mask_df = pd.DataFrame(mask).rename(
+            columns=dict(zip(range(len(df_dict)), list(df_dict.keys())))
         )
-        self.data = df[mask]
 
-        # Add index column (datetime or numerical)
+        self.data = df[mask_df]
         self._add_index()
         return 0
 
-    def _add_index(self):
+    def _add_index(self) -> None:
         """
         Adds an index column to the DataFrame: either datetime-based or numeric.
         """
         cols = list(self.data.columns)
         if self.date_index:
             self.data['index_column'] = [
-                (datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d') 
+                (datetime.datetime.now() + datetime.timedelta(i)).strftime('%Y-%m-%d')
                 for i in range(self.n_samples)
             ]
         else:
-            self.data = self.data.reset_index().rename(columns = {'index': 'index_column'})
+            self.data = self.data.reset_index().rename(columns={'index': 'index_column'})
         self.data = self.data[['index_column', *cols]]
 
-    def apply_func(self, func: str):
+    def apply_func(self, func: str) -> str:
         """
         Evaluates a mathematical expression string on the dataset and stores the result in column 'y'.
 
@@ -145,25 +153,26 @@ class Data:
             for var in [f'x{j}' for j in range(self.n_vars)]:
                 func = func.replace(var, f'self.data["{var}"]')
         except Exception as e:
-            raise(e)
+            raise e
         self.data['y'] = eval(func)
         return func
 
 if __name__ == '__main__':
     # Parse command line argument for YAML config path
     try:
-        conf_path = sys.argv[1]
+        conf_path: str = sys.argv[1]
     except Exception as e:
         print(e)
+        sys.exit(1)
 
     # Load configuration from YAML
     with open(conf_path, 'r') as cnf:
-        configs = yaml.safe_load(cnf)
+        configs: dict = yaml.safe_load(cnf)
 
     print("[*] Initialized")
 
     # Initialize data object with given arguments
-    m = Data(**configs['args'])
+    m: Data = Data(**configs['args'])
     print(f"[*] {m}")
 
     # Apply transformation function
@@ -171,5 +180,6 @@ if __name__ == '__main__':
     print(f'[*] Function applied: {m}')
 
     # Save result to CSV
-    m.data.to_csv(f'D:/repo/mockingjay/data/{configs["name"]}.csv')
-    print(f"[*] Data stored: `D:/repo/mockingjay/data/{configs["name"]}.csv`")
+    output_path: str = f'D:/repo/mockingjay/data/{configs["name"]}.csv'
+    m.data.to_csv(output_path)
+    print(f"[*] Data stored: `{output_path}`")
