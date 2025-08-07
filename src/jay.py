@@ -180,6 +180,6 @@ if __name__ == '__main__':
     print(f'[*] Function applied: {m}')
 
     # Save result to CSV
-    output_path: str = f'D:/repo/mockingjay/data/{configs["name"]}.csv'
+    output_path: str = f'../data/{configs["name"]}.csv'
     m.data.to_csv(output_path)
     print(f"[*] Data stored: `{output_path}`")
