@@ -109,11 +109,15 @@ class Data:
             int: Always returns 0 after successful generation.
         """
         df_dict: dict[str, np.ndarray] = {}
+        span = np.linspace(0, 1, self.n_samples)
         for i in range(self.n_vars):
-            if i < self.n_negative:
-                val = np.linspace(-1, +1, self.n_samples)
+            a, b = np.random.randint(-100, +100), np.random.randint(-100, +100)
+            start, end = min(a, b), max(a, b)
+            if self.uniform:
+                power_val = True
             else:
-                val = (np.linspace(-1, +1, self.n_samples) - np.random.rand()) * np.random.randint(1, 50)
+                power_val = np.linspace(0.1, 1, 10)[np.random.randint(0, 10)]
+            val = start + (end - start) * span**power_val
             df_dict[f'x{i}'] = val
 
         df = pd.DataFrame(df_dict)
