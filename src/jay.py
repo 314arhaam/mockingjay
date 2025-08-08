@@ -23,7 +23,6 @@ class Data:
         null_seed: int, 
         date_index: bool = False,
         uniform: bool = False,
-        func: Union[str, None] = None
     ) -> None:
         """
         Initializes the Data class and generates mock data.
@@ -35,8 +34,6 @@ class Data:
             date_index (bool): Whether to use dates in the index column.
             uniform (bool)
         """
-        if func and (n_vars > 10):
-            raise NotImplemented('Currently, function args are simply replaced in formula and when n_vars > 10, this leads to error')
         self.n_samples: int = n_samples
         self.n_vars: int = n_vars
         self.null_seed: int = null_seed
@@ -152,6 +149,8 @@ class Data:
         Returns:
             str: The modified function string after variable substitution.
         """
+        if (func != None) and (self.n_vars > 10):
+            raise NotImplementedError('Currently, function args are simply replaced in formula and when n_vars > 10, this leads to error')
         self.func = func
         try:
             for var in [f'x{j}' for j in range(self.n_vars)]:
