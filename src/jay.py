@@ -11,7 +11,6 @@ class Data:
         n_samples (int): Number of samples (rows).
         n_vars (int): Number of variables (columns).
         null_seed (int): Controls sparsity; higher values yield more nulls.
-        n_negative (int): Number of columns with values from -1 to 1.
         date_index (bool): Whether to use a datetime index.
         data (pd.DataFrame): Generated dataset.
         func (str): Last applied function string.
@@ -22,7 +21,6 @@ class Data:
         n_samples: int, 
         n_vars: int, 
         null_seed: int, 
-        n_negative: int = 3, 
         date_index: bool = False,
         uniform: bool = False
     ) -> None:
@@ -33,16 +31,12 @@ class Data:
             n_samples (int): Number of rows.
             n_vars (int): Number of features.
             null_seed (int): Parameter controlling frequency of nulls.
-            n_negative (int): Number of columns filled with linspace from -1 to 1.
             date_index (bool): Whether to use dates in the index column.
             uniform (bool)
         """
-        if n_vars < n_negative:
-            raise ValueError('Number of negative rows cannot be larger than number of variables')
         self.n_samples: int = n_samples
         self.n_vars: int = n_vars
         self.null_seed: int = null_seed
-        self.n_negative: int = n_negative
         self.date_index: bool = date_index
         self.func: Union[str, None] = None
         self.data: pd.DataFrame
