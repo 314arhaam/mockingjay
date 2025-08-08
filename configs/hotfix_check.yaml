@@ -1,0 +1,9 @@
+- name: "hot_fix_check"
+  args:
+    n_samples: 1000
+    n_vars: 30
+    null_seed: 50
+    date_index: True
+    uniform: True
+  function: "x1+2*x2+x0"
+  path: "/home/azureuser/mockingjay/data"

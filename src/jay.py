@@ -22,7 +22,7 @@ class Data:
         n_vars: int, 
         null_seed: int, 
         date_index: bool = False,
-        uniform: bool = False
+        uniform: bool = False,
     ) -> None:
         """
         Initializes the Data class and generates mock data.
@@ -108,7 +108,7 @@ class Data:
             a, b = np.random.randint(-100, +100), np.random.randint(-100, +100)
             start, end = min(a, b), max(a, b)
             if self.uniform:
-                power_val = True
+                power_val = 1
             else:
                 power_val = np.linspace(0.1, 1, 10)[np.random.randint(0, 10)]
             val = start + (end - start) * span**power_val
@@ -149,6 +149,8 @@ class Data:
         Returns:
             str: The modified function string after variable substitution.
         """
+        if (func != None) and (self.n_vars > 10):
+            raise NotImplementedError('Currently, function args are simply replaced in formula and when n_vars > 10, this leads to error')
         self.func = func
         try:
             for var in [f'x{j}' for j in range(self.n_vars)]:
