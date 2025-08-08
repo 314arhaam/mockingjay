@@ -11,7 +11,6 @@ class Data:
         n_samples (int): Number of samples (rows).
         n_vars (int): Number of variables (columns).
         null_seed (int): Controls sparsity; higher values yield more nulls.
-        n_negative (int): Number of columns with values from -1 to 1.
         date_index (bool): Whether to use a datetime index.
         data (pd.DataFrame): Generated dataset.
         func (str): Last applied function string.
@@ -22,8 +21,8 @@ class Data:
         n_samples: int, 
         n_vars: int, 
         null_seed: int, 
-        n_negative: int = 3, 
-        date_index: bool = False
+        date_index: bool = False,
+        uniform: bool = False
     ) -> None:
         """
         Initializes the Data class and generates mock data.
@@ -32,18 +31,16 @@ class Data:
             n_samples (int): Number of rows.
             n_vars (int): Number of features.
             null_seed (int): Parameter controlling frequency of nulls.
-            n_negative (int): Number of columns filled with linspace from -1 to 1.
             date_index (bool): Whether to use dates in the index column.
+            uniform (bool)
         """
-        if n_vars < n_negative:
-            raise ValueError('Number of negative rows cannot be larger than number of variables')
         self.n_samples: int = n_samples
         self.n_vars: int = n_vars
         self.null_seed: int = null_seed
-        self.n_negative: int = n_negative
         self.date_index: bool = date_index
         self.func: Union[str, None] = None
         self.data: pd.DataFrame
+        self.uniform: bool = uniform
         self._generate()
 
     def __repr__(self) -> str:
@@ -106,11 +103,15 @@ class Data:
             int: Always returns 0 after successful generation.
         """
         df_dict: dict[str, np.ndarray] = {}
+        span = np.linspace(0, 1, self.n_samples)
         for i in range(self.n_vars):
-            if i < self.n_negative:
-                val = np.linspace(-1, +1, self.n_samples)
+            a, b = np.random.randint(-100, +100), np.random.randint(-100, +100)
+            start, end = min(a, b), max(a, b)
+            if self.uniform:
+                power_val = True
             else:
-                val = (np.linspace(-1, +1, self.n_samples) - np.random.rand()) * np.random.randint(1, 50)
+                power_val = np.linspace(0.1, 1, 10)[np.random.randint(0, 10)]
+            val = start + (end - start) * span**power_val
             df_dict[f'x{i}'] = val
 
         df = pd.DataFrame(df_dict)
@@ -180,6 +181,8 @@ if __name__ == '__main__':
     print(f'[*] Function applied: {m}')
 
     # Save result to CSV
-    output_path: str = f'../data/{configs["name"]}.csv'
-    m.data.to_csv(output_path, index = False)
-    print(f"[*] Data stored: `{output_path}`")
+    output_filename: str = f'{configs["path"]}/{configs["name"]}.csv'
+    m.data.to_csv(output_filename, index = False)
+    print(f"[*] Data stored: `{output_filename}`")
+    print(m.data.info())
+    print(m.data.describe())
