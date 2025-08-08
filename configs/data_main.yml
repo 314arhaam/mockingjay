@@ -3,7 +3,6 @@ args:
   n_samples: 100
   n_vars: 5
   null_seed: 15
-  n_negative: 3
   date_index: False
 function: "2*x1+4*x3-x2"
 path: "/home/azureuser/mockingjay/data"
