@@ -4,6 +4,7 @@
     n_vars: 5
     null_seed: 50
     date_index: True
+    uniform: True
   function: "2*x1+4*x3-x2+x4*np.sin(x2*x1)"
   path: "/home/azureuser/mockingjay/data"
 - name: "data_mock_predict"
@@ -12,5 +13,6 @@
     n_vars: 5
     null_seed: 15
     date_index: True
+    uniform: True
   function: "2*x1+4*x3-x2+x4*np.sin(x2*x1)"
   path: "/home/azureuser/mockingjay/data"
