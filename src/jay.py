@@ -168,21 +168,22 @@ if __name__ == '__main__':
 
     # Load configuration from YAML
     with open(conf_path, 'r') as cnf:
-        configs: dict = yaml.safe_load(cnf)
+        configs_list: dict = yaml.safe_load(cnf)
+    
+    for configs in configs_list:
+        print(f"[*] Initialized {configs['name']}")
 
-    print("[*] Initialized")
+        # Initialize data object with given arguments
+        m: Data = Data(**configs['args'])
+        print(f"[*] {m}")
 
-    # Initialize data object with given arguments
-    m: Data = Data(**configs['args'])
-    print(f"[*] {m}")
+        # Apply transformation function
+        m.apply_func(configs['function'])
+        print(f'[*] Function applied: {m}')
 
-    # Apply transformation function
-    m.apply_func(configs['function'])
-    print(f'[*] Function applied: {m}')
-
-    # Save result to CSV
-    output_filename: str = f'{configs["path"]}/{configs["name"]}.csv'
-    m.data.to_csv(output_filename, index = False)
-    print(f"[*] Data stored: `{output_filename}`")
-    print(m.data.info())
-    print(m.data.describe())
+        # Save result to CSV
+        output_filename: str = f'{configs["path"]}/{configs["name"]}.csv'
+        m.data.to_csv(output_filename, index = False)
+        print(f"[*] Data stored: `{output_filename}`")
+        print(m.data.info())
+        print(m.data.describe())
