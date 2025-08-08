@@ -184,3 +184,5 @@ if __name__ == '__main__':
     output_filename: str = f'{configs["path"]}/{configs["name"]}.csv'
     m.data.to_csv(output_filename, index = False)
     print(f"[*] Data stored: `{output_filename}`")
+    print(m.data.info())
+    print(m.data.describe())
