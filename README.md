@@ -8,10 +8,10 @@ Designed for quick prototyping, testing, or generating datasets programmatically
 ## 🚀 Features
 
 - Generate `n_samples × n_vars` numeric dataset with controlled random nulls.
-- First `n_negative` variables are uniformly spaced between –1 and +1.
 - Optional date-based or sequential index column.
 - Dynamically apply any mathematical function (as a string) to variables to compute output `y`.
 - Basic operator overloading for combining or comparing `Data` instances.
+- Can be uniform or non-uniform
 
 ---
 
