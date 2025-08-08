@@ -23,7 +23,8 @@ class Data:
         n_vars: int, 
         null_seed: int, 
         n_negative: int = 3, 
-        date_index: bool = False
+        date_index: bool = False,
+        uniform: bool = False
     ) -> None:
         """
         Initializes the Data class and generates mock data.
@@ -34,6 +35,7 @@ class Data:
             null_seed (int): Parameter controlling frequency of nulls.
             n_negative (int): Number of columns filled with linspace from -1 to 1.
             date_index (bool): Whether to use dates in the index column.
+            uniform (bool)
         """
         if n_vars < n_negative:
             raise ValueError('Number of negative rows cannot be larger than number of variables')
@@ -44,6 +46,7 @@ class Data:
         self.date_index: bool = date_index
         self.func: Union[str, None] = None
         self.data: pd.DataFrame
+        self.uniform: bool = uniform
         self._generate()
 
     def __repr__(self) -> str:
