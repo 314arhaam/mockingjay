@@ -108,7 +108,7 @@ class Data:
             a, b = np.random.randint(-100, +100), np.random.randint(-100, +100)
             start, end = min(a, b), max(a, b)
             if self.uniform:
-                power_val = True
+                power_val = 1
             else:
                 power_val = np.linspace(0.1, 1, 10)[np.random.randint(0, 10)]
             val = start + (end - start) * span**power_val
