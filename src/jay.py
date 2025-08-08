@@ -178,11 +178,12 @@ if __name__ == '__main__':
         # Initialize data object with given arguments
         m: Data = Data(**configs['args'])
         print(f"[*] {m}")
-
-        # Apply transformation function
-        m.apply_func(configs['function'])
-        print(f'[*] Function applied: {m}')
-
+        try:
+            # Apply transformation function
+            m.apply_func(configs['function'])
+            print(f'[*] Function applied: {m}')
+        except NotImplementedError:
+            print('Error occured {e}\n Saving dataset without applying function')
         # Save result to CSV
         output_filename: str = f'{configs["path"]}/{configs["name"]}.csv'
         m.data.to_csv(output_filename, index = False)
