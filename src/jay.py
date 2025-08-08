@@ -187,6 +187,6 @@ if __name__ == '__main__':
     print(f'[*] Function applied: {m}')
 
     # Save result to CSV
-    output_filename: str = f'{configs['function']}/{configs["name"]}.csv'
+    output_filename: str = f'{configs["path"]}/{configs["name"]}.csv'
     m.data.to_csv(output_filename, index = False)
     print(f"[*] Data stored: `{output_filename}`")
