@@ -38,7 +38,7 @@ class Data:
         self.n_vars: int = n_vars
         self.null_seed: int = null_seed
         self.date_index: bool = date_index
-        self.func: Union[str, None] = None
+        self.func: Union[list, None] = []
         self.data: pd.DataFrame
         self.uniform: bool = uniform
         self._generate()
@@ -141,7 +141,7 @@ class Data:
             self.data = self.data.reset_index().rename(columns={'index': 'index_column'})
         self.data = self.data[['index_column', *cols]]
 
-    def apply_func(self, func: str) -> str:
+    def apply_func(self, func: str, name: str) -> str:
         """
         Evaluates a mathematical expression string on the dataset and stores the result in column 'y'.
 
@@ -151,15 +151,15 @@ class Data:
         Returns:
             str: The modified function string after variable substitution.
         """
-        if (func != None) and (self.n_vars > 10):
+        if (self.n_vars > 10):
             raise NotImplementedError('Currently, function args are simply replaced in formula and when n_vars > 10, this leads to error')
-        self.func = func
+        self.func.append(func)
         try:
             for var in [f'x{j}' for j in range(self.n_vars)]:
                 func = func.replace(var, f'self.data["{var}"]')
         except Exception as e:
             raise e
-        self.data['y'] = eval(func)
+        self.data[f'{name}'] = eval(func)
         return func
 
 if __name__ == '__main__':
@@ -182,8 +182,10 @@ if __name__ == '__main__':
         print(f"[*] {m}")
         try:
             # Apply transformation function
-            m.apply_func(configs['function'])
-            print(f'[*] Function applied: {m}')
+            for fun_index, fun in enumerate(configs['function']):
+                output_name = f'y{fun_index}'
+                m.apply_func(fun, output_name)
+                print(f'[*] Function applied: {m}')
         except NotImplementedError:
             print('Error occured {e}\n Saving dataset without applying function')
         # Save result to CSV
