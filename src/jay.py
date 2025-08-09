@@ -189,11 +189,11 @@ if __name__ == '__main__':
         except NotImplementedError:
             print('Error occured {e}\n Saving dataset without applying function')
         # Save result to CSV
-        if config['data']['type'] == 'file':
-            if config['data']['format'] == 'csv':
+        if configs['data']['type'] == 'file':
+            if configs['data']['format'] == 'csv':
                 output_filename: str = f'{configs["data"]["path"]}/{configs["name"]}.csv'
                 m.data.to_csv(output_filename, index = False)
-            elif config['data']['format'] == 'parquet':
+            elif configs['data']['format'] == 'parquet':
                 output_filename: str = f'{configs["data"]["path"]}/{configs["name"]}.csv'
                 m.data.to_parquet(output_filename, index = False)
             print(f"[*] Data stored: `{output_filename}`")
