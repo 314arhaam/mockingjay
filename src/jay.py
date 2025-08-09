@@ -111,6 +111,8 @@ class Data:
                 power_val = 1
             else:
                 power_val = np.linspace(0.1, 1, 10)[np.random.randint(0, 10)]
+                if  np.random.randint(0, 1):
+                    power_val = 1/power_val
             val = start + (end - start) * span**power_val
             df_dict[f'x{i}'] = val
 
