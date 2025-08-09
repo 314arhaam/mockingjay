@@ -173,7 +173,7 @@ if __name__ == '__main__':
     # Load configuration from YAML
     with open(conf_path, 'r') as cnf:
         configs_list: dict = yaml.safe_load(cnf)
-    
+    """
     for configs in configs_list:
         print(f"[*] Initialized {configs['name']}")
 
@@ -199,3 +199,4 @@ if __name__ == '__main__':
             print(f"[*] Data stored: `{output_filename}`")
         print(m.data.info())
         print(m.data.describe())
+    """
