@@ -8,7 +8,10 @@
   function: 
     - "2*x1+4*x3-x2+x4*np.sin(x2*x1)"
     - "x1 + x0"
-  path: "/home/azureuser/mockingjay/data"
+  data:
+    type: file
+    format: csv
+    path: "/home/azureuser/mockingjay/data"
 - name: "data_mock_multi_predict"
   args:
     n_samples: 200
@@ -19,4 +22,7 @@
   function: 
     - "2*x1+4*x3-x2+x4*np.sin(x2*x1)"
     - "x1 + x0"
-  path: "/home/azureuser/mockingjay/data"
+  data:
+    type: file
+    format: csv
+    path: "/home/azureuser/mockingjay/data"
