@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import datetime, yaml, sys
 from typing import Union
-from jay import *
-from pipeline import *
+from src.jay import *
+from src.pipeline import *
 
 if __name__ == '__main__':
     # Parse command line argument for YAML config path

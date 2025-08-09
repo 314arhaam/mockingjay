@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import datetime, yaml, sys
 from typing import Union
-from jay import *
+from .jay import *
 
 class Pipeline:
     def __init__(self, configs_list: list):
