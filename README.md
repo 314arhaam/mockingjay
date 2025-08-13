@@ -26,7 +26,7 @@ cd mockingjay
 
 ## Config
 
-Sample pipeline config that creates two datasets
+Sample pipeline config that creates two datasets.
 
 ```yaml
 - name: "data_mock_multi_build"
