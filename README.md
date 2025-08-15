@@ -1,7 +1,7 @@
 # MockingJay
 
 Generate synthetic mock data, control randomness and sparsity, and apply custom functions to derive outputs.  
-Designed for quick prototyping, testing, or generating datasets programmatically.
+Designed for quick prototyping, testing, or generating datasets, programmatically.
 
 ---
 
