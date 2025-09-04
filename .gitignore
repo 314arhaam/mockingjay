@@ -4,3 +4,4 @@ __pycache__/
 configs/
 ! keep_*.yml
 ! keep_*.yaml
+.venv/
