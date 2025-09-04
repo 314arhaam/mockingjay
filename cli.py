@@ -1,6 +1,6 @@
 import inquirer
 import yaml
-from jay import Data
+from src.jay import Data
 
 def main():
     print("Welcome to the Data Generator CLI!")
